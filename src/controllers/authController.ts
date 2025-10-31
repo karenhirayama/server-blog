@@ -1,18 +1,18 @@
 import { NextFunction, Request, Response } from 'express'
 import bcrypt from 'bcrypt'
+
 import { UserModel } from '../models/userModel'
+
 import { generateToken } from '../middleware/auth'
-import passport from 'passport'
+
 import { User } from '../types/user'
+
+import passport from '../config/passport'
 
 export const authController = {
   async register(req: Request, res: Response) {
     try {
-      const { email, password } = req.body
-
-      if (!email || !password) {
-        return res.status(400).json({ success: false, message: 'Email and password are required.' })
-      }
+      const { email, password, name, isAdmin = false } = req.body
 
       const existingUser = await UserModel.findByEmail(email)
       if (existingUser) {
@@ -21,7 +21,7 @@ export const authController = {
 
       const hashPassword = bcrypt.hashSync(password, 10)
 
-      const newUser = await UserModel.create({ email, password: hashPassword })
+      const newUser = await UserModel.create({ name, isAdmin, email, password: hashPassword })
 
       const token = generateToken(newUser)
 

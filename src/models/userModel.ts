@@ -1,5 +1,5 @@
-import bcrypt from 'bcrypt'
 import { pool } from '../config/database'
+
 import { User, UserInput } from '../types/user'
 
 export const UserModel = {
@@ -14,9 +14,25 @@ export const UserModel = {
   },
 
   async create(userInput: UserInput): Promise<User> {
-    const { email, password } = userInput
-    const hashPassord = bcrypt.hashSync(password, 10)
-    const result = await pool.query('INSERT INTO users (email, password) VALUES ($1, $2) RETURNING id, email, name, is_admin', [email, hashPassord])
-    return result.rows[0]
+    const { email, password, name, isAdmin = false } = userInput
+
+    if (!name || name.trim().length === 0) {
+      throw new Error('Name is required and cannot be empty')
+    }
+
+    const cleanName = name.trim()
+
+    try {
+      const result = await pool.query('INSERT INTO users (email, password, name, is_admin) VALUES ($1, $2, $3, $4) RETURNING id, email, name, is_admin', [
+        email,
+        password,
+        cleanName,
+        isAdmin,
+      ])
+      return result.rows[0]
+    } catch (error) {
+      console.error('Database error in UserModel.create:', error)
+      throw error
+    }
   },
 }
