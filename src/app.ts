@@ -2,6 +2,7 @@ import express from 'express'
 
 import { authRoutes } from './routes/auth'
 import { postRoutes } from './routes/post'
+import { commentRoutes } from './routes/comment'
 
 import passport from './config/passport'
 
@@ -15,6 +16,7 @@ app.use(passport.initialize())
 // Routes
 app.use('/api/auth', authRoutes)
 app.use('/api/posts', postRoutes)
+app.use('/api/comments', commentRoutes)
 
 // Health Check Endpoint
 app.get('/health', (req, res) => {
