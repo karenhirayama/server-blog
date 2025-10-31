@@ -4,14 +4,12 @@ export interface User {
   email: string
   password: string
   created_at: Date
-  isAdmin: boolean
+  isAdmin?: boolean
 }
 
 export interface UserInput {
   email: string
   password: string
-}
-
-export interface AuthRequest extends Express.Request {
-  user?: User
+  name: string
+  isAdmin?: boolean
 }
